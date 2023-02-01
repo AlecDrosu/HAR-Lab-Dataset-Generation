@@ -1,0 +1,82 @@
+WSU Smart Apartment ADL Error Testbed
+
+Description
+
+These datasets represent sensor events collected in the WSU smart apartment
+testbed.  The data represents participants performing five ADL activities
+in the apartment.  For each of the five tasks, an error is introduced.
+The five tasks and the errors are:
+
+   1:  Make a phone call.  The participant moves to the phone in the
+       dining room, looks p a specific number in the phone book, dials
+       the number, and listens to the message.  The recorded message provides
+       cooking directions, which the participant summarizes on a notepad.
+       Error - the participant initially dials the wrong phone number and
+       has to redial.
+
+   2:  Wash hands.  The participant moves into the kitchen sink and washes
+       his/her hands in the sink, using hand soap and drying their hands
+       with a paper towel.
+       Error - the participant does not turn the water off after washing
+       his/her hands.
+
+   3:  Cook.  The participant cooks a pot of oatmeal according to the directions
+       given in the phone message.  To cook the oatmeal the participant must
+       measure water, pour the water into a pot and boil it, add oats, then
+       put the oatmeal into a bowl with raisins and brown sugar.
+       Error - the participant does not turn the burner off after cooking
+       the oatmeal.
+
+   4:  Eat.  The participant takes the oatmeal and a medicine container to the
+       dining room and eats the food.
+       Error - the participant does not bring the medicine container with them
+       to the dining room.
+
+   5:  Clean.  The participant takes all of the dishes to the sink and cleans
+       them with water and dish soap in the kitchen.
+       Error - the participant does not use water to clean the dishes.
+
+File format
+
+The files are named according to the participant number and the task
+number.  File p01.t1 thus represents the sensor data for participant 1
+performing task 1.  There is one sensor event on each line of the files.
+The event syntax is Date Time SensorID Value.
+
+Sensor layouts
+
+The sensor layout of the apartment is shown in
+the files Chinook_3_Bedroom_TH.png and Chinook_Cabinet.png.
+The sensors can be categorized by:
+
+   M01..M26:  motion sensors
+   I01..I05:  item sensors for oatmeal, raisins, brown sugar,
+              bowl, measuring spoon
+   I06:    medicine container sensor
+   I07:    pot sensor
+   I08:    phone book sensor
+   D01:    cabinet sensor
+   AD1-A:  water sensor
+   AD1-B:  water sensor
+   AD1-C:  burner sensor
+   asterisk:  phone usage
+
+Data files
+
+p17.t1  p20.t1  p22.t1  p24.t1  p27.t1  p30.t1  p52.t1  p54.t1  p56.t1  p58.t1
+p17.t2  p20.t2  p22.t2  p24.t2  p27.t2  p30.t2  p52.t2  p54.t2  p56.t2  p58.t2
+p17.t3  p20.t3  p22.t3  p24.t3  p27.t3  p30.t3  p52.t3  p54.t3  p56.t3  p58.t3
+p17.t4  p20.t4  p22.t4  p24.t4  p27.t4  p30.t4  p52.t4  p54.t4  p56.t4  p58.t4
+p17.t5  p20.t5  p22.t5  p24.t5  p27.t5  p30.t5  p52.t5  p54.t5  p56.t5  p58.t5
+p18.t1  p21.t1  p23.t1  p26.t1  p29.t1  p31.t1  p53.t1  p55.t1  p57.t1  p59.t1
+p18.t2  p21.t2  p23.t2  p26.t2  p29.t2  p31.t2  p53.t2  p55.t2  p57.t2  p59.t2
+p18.t3  p21.t3  p23.t3  p26.t3  p29.t3  p31.t3  p53.t3  p55.t3  p57.t3  p59.t3
+p18.t4  p21.t4  p23.t4  p26.t4  p29.t4  p31.t4  p53.t4  p55.t4  p57.t4  p59.t4
+p18.t5  p21.t5  p23.t5  p26.t5  p29.t5  p31.t5  p53.t5  p55.t5  p57.t5  p59.t5
+
+Papers
+
+All use of the data must cite the WSU smart home project.
+
+D. Cook and M. Schmitter-Edgecombe, Assessing the quality of activities in a
+smart environment.  Methods of Information in Medicine, 2009.
