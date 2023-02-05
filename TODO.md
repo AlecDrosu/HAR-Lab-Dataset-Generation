@@ -1,8 +1,8 @@
-1. Fix Pre Processing
-   - Investigate issue with random activities and activity statuses
-   - Address and correct any issues found
-2. Move Processing Files
-   - Move pre processing, post processing, and intermediate processing files to separate Jupyter notebook
+1. ~~Fix Pre Processing~~
+   - ~~Investigate issue with random activities and activity statuses~~
+   - ~~Address and correct any issues found~~
+2. ~~Move Processing Files~~
+   - ~~Move pre processing, post processing, and intermediate processing files to separate Jupyter notebook~~
 3. Implement RNN network or similar
    - Train VAE model on event sequences
    - Ensure the following sequences are recognized:
