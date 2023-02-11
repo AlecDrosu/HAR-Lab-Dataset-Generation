@@ -15,7 +15,7 @@ Bed_to_Toilet (157)
 Enter_Home (431)
 Leave_Home (431)
 Housekeeping (33)
-Resperate (6)
+Respirate (6)
 
 The sensor events are generated from motion sensors (these sensor IDs begin
 with "M"), door closure sensors (these sensor IDs begin with "D"), and
