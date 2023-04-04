@@ -6,10 +6,10 @@
 3. Implement RNN network or similar
    - Train VAE model on event sequences
    - Ensure the following sequences are recognized:
-     1. Device IDs starting with 'M' followed by 'ON' or 'OFF' status
-     2. Device IDs starting with 'T' followed by degrees in Celsius
-     3. Device IDs starting with 'D' followed by 'OPEN' or 'CLOSE' status
-     4. Activities beginning and ending for the following activities 
+     1. Device IDs starting with 'M' must be followed by 'ON' or 'OFF' status
+     2. Device IDs starting with 'T' must be followed by degrees in Celsius
+     3. Device IDs starting with 'D' must be followed by 'OPEN' or 'CLOSE' status
+     4. Activities must be followed by a 'begin' or 'end' status
          - Meal_Preparation
          - Relax
          - Eating
