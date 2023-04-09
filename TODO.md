@@ -15,3 +15,6 @@
    - Respirate
 5. Specific Activities only occuring with specific Device IDs
 6. All IDs must be within a certain range
+
+Similarity and variation
+look at virtual datasets generation papers

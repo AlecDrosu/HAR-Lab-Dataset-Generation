@@ -12,15 +12,17 @@ def segment_data_by_day(data_df):
 
     return daily_segments
 
-def sliding_window(daily_segments, step_size=100):
+def sliding_window(daily_segments, overlap_ratio=0.5):
     windows = []
 
     for day_data in daily_segments:
         start = 0
         end = len(day_data)
+        window_size = len(day_data)  # This will make the window_size equal to the number of sensor readings per day
+        step_size = int(window_size * overlap_ratio)
 
-        while start + step_size <= end:
-            window = day_data.iloc[start:start+step_size, :]
+        while start + window_size <= end:
+            window = day_data.iloc[start:start+window_size, :]
             windows.append(window)
             start += step_size
 
