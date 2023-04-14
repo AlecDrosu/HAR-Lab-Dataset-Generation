@@ -44,8 +44,8 @@ for i, (sensor_data, title) in enumerate(zip(sensor_types, titles)):
         
 
 # Show the plot
-# plt.tight_layout()
-# plt.show()
+plt.tight_layout()
+plt.show()
 
 # Create a combined pivot table with all sensor types
 combined_pivot_table = pd.concat(sensor_types).pivot_table(index='Activity', columns='Device ID', values='Status', aggfunc='count', fill_value=0)

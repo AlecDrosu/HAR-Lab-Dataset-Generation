@@ -42,14 +42,14 @@ class CustomPenaltyLayer(Layer):
         activity_condition = tf.logical_and(0 <= activity, activity <= 10)
         activity_penalty = tf.reduce_sum(tf.cast(tf.logical_and(activity_condition, tf.logical_not(tf.logical_or(activity_status == 0, activity_status == 1))), tf.float32))
 
-        # Enforce the fact that no activities can exceed a value of 56
+        # Enforce the fact that no status can exceed a value of 56
         status_exceeded_condition = status > 56
         status_exceeded_penalty = tf.reduce_sum(tf.cast(status_exceeded_condition, tf.float32))
 
         # Enforce the fact that no activities can exceed a value of 11
         activity_exceeded_condition = activity > 11
         activity_exceeded_penalty = tf.reduce_sum(tf.cast(activity_exceeded_condition, tf.float32))
-
+        activity_exceeded_penalty = activity_exceeded_penalty*2
         # Enforce the fact that no device IDs can exceed a value of 38
         device_id_exceeded_condition = device_id > 38
         device_id_exceeded_penalty = tf.reduce_sum(tf.cast(device_id_exceeded_condition, tf.float32))
