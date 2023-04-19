@@ -106,11 +106,6 @@ def model_processing_code(filename, output_filename):
         'activity_mapping': activity_mapping,
         'activity_status_mapping': activity_status_mapping
     }
-
-    print("Device ID Mapping:", device_id_mapping)
-    print("Status Mapping:", status_mapping)
-    print("Activity Mapping:", activity_mapping)
-    print("Activity Status Mapping:", activity_status_mapping)
     return encoders_and_mappings
 
 # This code will inport the prediction data from the model. It will then convert the Label Encoded data back into the original labels. Saved as COMPLETE_PREDICTION.csv

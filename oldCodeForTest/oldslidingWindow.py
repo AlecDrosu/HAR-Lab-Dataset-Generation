@@ -4,7 +4,9 @@ def read_data(file_path):
     return pd.read_csv(file_path, header=0, names=["date", "time", "device_id", "status", "activity", "activity_status"])
 
 def segment_data_by_day(data_df):
-    data_by_day = data_df.groupby(data_df["date"])
+    # data_by_day = data_df.groupby(data_df["date"])
+    # instead of grouping by data["date"], just group by the first column, which is date
+    data_by_day = data_df.groupby(data_df.iloc[:, 0])
     daily_segments = []
 
     for _, day_data in data_by_day:

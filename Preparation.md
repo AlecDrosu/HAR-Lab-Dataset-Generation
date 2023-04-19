@@ -13,6 +13,7 @@
 - What is the variability?
 - How can we quantify the data? (Validation I guess)
 - Diverse Data
+- modality
   
 ## Things to do:
 - Evaluate on other datasets
