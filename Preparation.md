@@ -5,7 +5,7 @@
 2. [IMUTube: Automatic Extraction of Virtual on-body Accelerometry from Video for Human Activity Recognition](https://arxiv.org/abs/2006.05675)
 3. [Human activity recognition in smart homes : tackling data variability using context-dependent deep learning, transfer learning and data synthesis](https://theses.hal.science/tel-03728064/)
 
-### Radu
+### Other Papers
 4. [A Survey of Human Activity Recognition in Smart Homes Based on IoT Sensors Algorithms: Taxonomies, Challenges, and Opportunities with Deep Learning](https://arxiv.org/abs/2111.04418)
 5. [Joint Modeling of Event Sequence and Time Series with Attentional Twin Recurrent Neural Networks](https://arxiv.org/abs/1703.08524)
 
