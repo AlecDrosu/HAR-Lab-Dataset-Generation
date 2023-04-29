@@ -1,7 +1,8 @@
 import pandas as pd
 
 def read_data(file_path):
-    return pd.read_csv(file_path, header=0, names=["date", "time", "device_id", "status", "activity", "activity_status"])
+    # return pd.read_csv(file_path, header=0, names=["date", "time", "device_id", "status", "activity", "activity_status"])
+    return pd.read_csv(file_path, header=0, names=["Date","Time","Device_Status","Activity"])
 
 def segment_data_by_day(data_df):
     # data_by_day = data_df.groupby(data_df["date"])
