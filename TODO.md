@@ -16,5 +16,16 @@
 5. Specific Activities only occuring with specific Device IDs
 6. All IDs must be within a certain range
 
-Similarity and variation
-look at virtual datasets generation papers
+combine the datasets which means fix sliding window
+
+try implementing the other validation forms:
+   Leave one subject out cross validation (maybe not?)
+   one to one
+   many to one
+   stratified three fold cross validation
+
+fix the constraints
+(do the constraints account for normalizing the data?)
+cite him as a source (not urgent)
+
+fix the error of undoing the label encoding, the datasets are coming out too small.

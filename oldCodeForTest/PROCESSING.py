@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from datetime import timedelta
 import time
 import csv
 import numpy as np
@@ -116,23 +117,20 @@ def model_post_processing(filename, output_filename, encoders_and_mappings):
         clipped_val = min(max(rounded_val, 0), max_val)
         return encoder.inverse_transform([clipped_val])[0]
 
-    device_id_encoder = encoders_and_mappings['device_id_encoder']
-    status_encoder = encoders_and_mappings['status_encoder']
-    activity_encoder = encoders_and_mappings['activity_encoder']
-    activity_status_encoder = encoders_and_mappings['activity_status_encoder']
-    device_id_mapping = encoders_and_mappings['device_id_mapping']
-    status_mapping = encoders_and_mappings['status_mapping']
-    activity_mapping = encoders_and_mappings['activity_mapping']
-    activity_status_mapping = encoders_and_mappings['activity_status_mapping']
+    device_id_and_status_encoder = LabelEncoder()
+    activity_and_status_encoder = LabelEncoder()
+
+    device_id_and_status_mapping = encoders_and_mappings['device_id_and_status_encoder']
+    activity_and_status_mapping = encoders_and_mappings['activity_and_status_encoder']
+
+    device_id_and_status_encoder.classes_ = np.array(list(device_id_and_status_mapping.keys()))
+    activity_and_status_encoder.classes_ = np.array(list(activity_and_status_mapping.keys()))
 
     data = pd.read_csv(filename)
-    data.columns = ['Date', 'Time', 'Device ID', 'Status', 'Activity', 'Activity Status']
-    print(data.head())
+    data.columns = ['Date', 'Time', 'Device_Status', 'Activity']
 
-    data['Device ID'] = data['Device ID'].apply(round_and_inverse_transform, args=(device_id_mapping, device_id_encoder))
-    data['Status'] = data['Status'].apply(round_and_inverse_transform, args=(status_mapping, status_encoder))
-    data['Activity'] = data['Activity'].apply(round_and_inverse_transform, args=(activity_mapping, activity_encoder))
-    data['Activity Status'] = data['Activity Status'].apply(round_and_inverse_transform, args=(activity_status_mapping, activity_status_encoder))
+    data['Device_Status'] = data['Device_Status'].apply(round_and_inverse_transform, args=(device_id_and_status_mapping, device_id_and_status_encoder))
+    data['Activity'] = data['Activity'].apply(round_and_inverse_transform, args=(activity_and_status_mapping, activity_and_status_encoder))
 
     # save the data to a new file
     data.to_csv(output_filename, index=False)
@@ -167,3 +165,60 @@ def print_mappings(device_id_and_status_mappings, activity_and_status_mappings):
     print_first_and_last_values("M Values", m_values)
     print_first_and_last_values("T Values", t_values)
     print_first_and_last_values("Other Values", other_values)
+
+def reconstructed_data(predicted_windows_with_date_time, window_size, overlap_ratio):
+    step_size = int(window_size * overlap_ratio)
+    daily_segments = []
+
+    # Add all data from the first window
+    daily_segments.append(predicted_windows_with_date_time[0])
+
+    # For the rest of the windows, only add non-overlapping data
+    for window in predicted_windows_with_date_time[1:]:
+        daily_segment = window[step_size:, :]
+        daily_segments.append(daily_segment)
+
+    # Concatenate all daily segments to form the original dataset format
+    original_data_format = np.concatenate(daily_segments, axis=0)
+
+    return original_data_format
+
+# Read the CSV file
+def undo_split(filename, output_filename):
+    df = pd.read_csv(filename)
+
+    # Separate the Device_Status column
+    df[['Device ID', 'Device Status']] = df['Device_Status'].str.split('_', expand=True)
+    df.drop('Device_Status', axis=1, inplace=True)
+
+    # Add new columns for Activity and Activity Status
+    df['Activity Status'] = None
+
+    # Iterate through the rows and split the 'Activity' column at the last underscore
+    for index, row in df.iterrows():
+        if pd.notna(row['Activity']) and '_' in row['Activity']:
+            parts = row['Activity'].rsplit('_', 1)
+            activity, status = parts[0], parts[1]
+            df.at[index, 'Activity'] = activity
+            df.at[index, 'Activity Status'] = status
+
+        # Transform the date format
+        date = str(row['Date']).split('.')[0]  # Remove decimal part if exists
+        year, month, day = date[:4], date[4:6], date[6:]
+        df.at[index, 'Date'] = f'{year}-{month}-{day}'
+
+        # Transform the time format
+        time = float(row['Time'])
+        seconds = int(time)
+        milliseconds = int((time - seconds) * 1e3)  # Convert fractional part to milliseconds
+        if milliseconds == 0:
+            milliseconds = 1  # Use 1 millisecond if there are no milliseconds
+        time_duration = timedelta(seconds=seconds, milliseconds=milliseconds)
+        df.at[index, 'Time'] = str(time_duration)[:-3]  # Remove the last 3 characters (microseconds)
+
+    # Rearrange the columns
+    df = df[['Date', 'Time', 'Device ID', 'Device Status', 'Activity', 'Activity Status']]
+
+    # Save the updated DataFrame to a new CSV file
+    df.to_csv(output_filename, index=False)
+    return

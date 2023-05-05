@@ -21,42 +21,65 @@ class CustomPenaltyLayer(Layer):
     @tf.function
     def compute_custom_penalty(self, y_pred):
         # Extract the columns from the input tensor
-        device_id = y_pred[:, 2]
-        status = y_pred[:, 3]
-        activity = y_pred[:, 4]
-        activity_status = y_pred[:, 5]
+        device_and_status = y_pred[:, 2]
+        activity_and_status = y_pred[:, 3]
 
-        # Device IDs starting with 'M'
-        m_device_condition = tf.logical_and(3 <= device_id, device_id <= 33)
-        m_device_penalty = tf.reduce_sum(tf.cast(tf.logical_and(m_device_condition, tf.logical_not(tf.logical_or(status == 55, status == 54))), tf.float32))
+        # Define the valid ranges
+        valid_device_and_status_range = (0, 252)
 
-        # Device IDs starting with 'T'
-        t_device_condition = tf.logical_and(34 <= device_id, device_id <= 38)
-        t_device_penalty = tf.reduce_sum(tf.cast(tf.logical_and(t_device_condition, tf.logical_not(tf.logical_and(16 <= status, status <= 43))), tf.float32))
+        # Calculate penalties for device_and_status
+        device_and_status_penalty = tf.reduce_sum(
+            tf.where(
+                tf.logical_and(
+                    device_and_status >= valid_device_and_status_range[0],
+                    device_and_status <= valid_device_and_status_range[1]
+                ),
+                0.0,
+                1.0
+            )
+        )
 
-        # Device IDs starting with 'D'
-        d_device_condition = tf.logical_and(0 <= device_id, device_id <= 2)
-        d_device_penalty = tf.reduce_sum(tf.cast(tf.logical_and(d_device_condition, tf.logical_not(tf.logical_or(status == 56, status == 53))), tf.float32))
+        # Calculate penalties for activity_and_status
+        is_out_of_range = tf.logical_or(
+            activity_and_status < 0,
+            activity_and_status > 22
+        )
+        activity_and_status_penalty = tf.reduce_sum(tf.cast(is_out_of_range, tf.float32))
 
-        # Enforce activity constraints
-        activity_condition = tf.logical_and(0 <= activity, activity <= 10)
-        activity_penalty = tf.reduce_sum(tf.cast(tf.logical_and(activity_condition, tf.logical_not(tf.logical_or(activity_status == 0, activity_status == 1))), tf.float32))
- 
-        # Enforce the fact that no status can exceed a value of 56
-        status_exceeded_condition = status > 56
-        status_exceeded_penalty = tf.reduce_sum(tf.cast(status_exceeded_condition, tf.float32))
+        def loop_body(i, invalid_transition_penalty):
+            prev_value = activity_and_status[i - 1]
+            current_value = activity_and_status[i]
 
-        # Enforce the fact that no activities can exceed a value of 11
-        activity_exceeded_condition = activity > 11
-        activity_exceeded_penalty = tf.reduce_sum(tf.cast(activity_exceeded_condition, tf.float32))
-        activity_exceeded_penalty = activity_exceeded_penalty*2
-        # Enforce the fact that no device IDs can exceed a value of 38
-        device_id_exceeded_condition = device_id > 38
-        device_id_exceeded_penalty = tf.reduce_sum(tf.cast(device_id_exceeded_condition, tf.float32))
+            condition = tf.logical_and(prev_value % 2 == 0, prev_value < 20)
+            if tf.reduce_all(condition):
+                invalid_transition = tf.logical_and(
+                    current_value != prev_value + 1,
+                    current_value != 22
+                )
+                invalid_transition_penalty += tf.cast(invalid_transition, tf.float32)
+            else:
+                invalid_transition_penalty = invalid_transition_penalty
 
-        exceeded_penalty = status_exceeded_penalty + activity_exceeded_penalty + device_id_exceeded_penalty
+            return i + 1, invalid_transition_penalty
 
-        # Implement constraints for IDs followed by specific actions
+        def loop_cond(i, _):
+            return i < tf.shape(activity_and_status)[0]
 
-        penalty = m_device_penalty + t_device_penalty + d_device_penalty + activity_penalty + exceeded_penalty
-        return penalty
+        _, invalid_transition_penalty = tf.while_loop(
+            loop_cond,
+            loop_body,
+            (tf.constant(1, dtype=tf.int32), tf.constant(0.0, dtype=tf.float32)),
+            shape_invariants=(
+                tf.TensorShape([]),
+                tf.TensorShape([])
+            )
+        )
+
+        # Check for the average number of activities in the window
+        num_activities = tf.reduce_sum(tf.cast(activity_and_status != 22, tf.float32))
+        activity_count_penalty = tf.abs(num_activities - 58.0)  # Adjust the target number of activities as needed
+
+        # Calculate the total penalty
+        total_penalty = device_and_status_penalty + activity_and_status_penalty + invalid_transition_penalty + activity_count_penalty
+
+        return total_penalty
